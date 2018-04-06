@@ -106,7 +106,7 @@ while not done:
                 print("read successfully")
 
                 # checking if the image was process correctly
-                plt.imshow(vector)
+                plt.imshow(vector, interpolation='none')
                 plt.set_cmap('gray')
                 plt.show()
 
