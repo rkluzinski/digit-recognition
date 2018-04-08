@@ -123,7 +123,7 @@ while not done:
                         x_moment += i * vector[i][j]
                         y_moment += j * vector[i][j]
                         mass += vector[i][j]
-                
+
                 delx = math.floor(y_moment/mass) # rounding
                 dely = math.floor(x_moment/mass) # rounding
 
@@ -151,12 +151,12 @@ while not done:
                 #plt.show()
 
                 onehot = digit_classifier.feedforward(vector.reshape(784, 1))
-                print(np.argmax(onehot))
-                               
+                # print(np.argmax(onehot))
+
 
                 # once program reads what user draws
                 # send the value back to them
-                # text_read =
+                text_read = np.argmax(onehot)
 
                 clear = True
             # if c was pressed
