@@ -128,7 +128,7 @@ while not done:
                         else:
                             # white pixel
                             vector[i][j] = 0
-                        print(vector[i][j])
+                        # print(vector[i][j])
                 delx = math.floor(y_moment/mass) # rounding
                 dely = math.floor(x_moment/mass) # rounding
                 # print("before")
@@ -163,8 +163,9 @@ while not done:
                 # pygame.display.flip()
                 # pygame.time.wait(2000)
                 # -------------------------
-                
+
                 # checking if the image was process correctly
+
                 plt.imshow(vector,interpolation = 'none')
                 plt.set_cmap('binary')
                 plt.show()
