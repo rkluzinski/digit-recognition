@@ -5,6 +5,8 @@ Last Edited April 6, 2018
 A neural network class.
 """
 
+from random import shuffle
+from collections import deque
 import numpy as np
 
 class NeuralNetwork:
@@ -116,7 +118,7 @@ class NeuralNetwork:
         return loss, dW1, dW2, db1, db2
 
 
-    def batch_grad_descent(self, X, Y, alpha, epochs):
+    def BGD(self, X, Y, learning_rate, epochs):
         """
         Uses the entire set of training data to compute the
         gradient for each epoch. The weights and biases are only
@@ -127,12 +129,51 @@ class NeuralNetwork:
             loss, dW1, dW2, db1, db2 = self.backpropagate(X, Y)
 
             # update parameters
-            self.W1 -= alpha * dW1
-            self.W2 -= alpha * dW2
-            self.b1 -= alpha * db1
-            self.b2 -= alpha * db2
+            self.W1 -= learning_rate * dW1
+            self.W2 -= learning_rate * dW2
+            self.b1 -= learning_rate * db1
+            self.b2 -= learning_rate * db2
             
             print(loss)
+
+    def SGD(self, X, Y,
+            batch_size,
+            learning_rate,
+            epochs,
+            logfile=None):
+        """
+        Optimizes the weights and biases using gradient descent.
+        """
+
+        assert len(X) == len(Y)
+        assert batch_size < len(X)
+
+        iterations = 0
+        
+        for i in range(epochs):
+            # randomly shuffle training data
+            training_order = [i for i in range( len(X) )]
+            shuffle(training_order)
+
+            for j in range(0, len(X), batch_size):
+
+                batchX = [X[k] for k in training_order[j:j+batch_size]]
+                batchY = [Y[k] for k in training_order[j:j+batch_size]]
+                
+                loss, dW1, dW2, db1, db2 =\
+                self.backpropagate(batchX, batchY)
+
+                # update parameters
+                self.W1 -= learning_rate * dW1
+                self.W2 -= learning_rate * dW2
+                self.b1 -= learning_rate * db1
+                self.b2 -= learning_rate * db2
+
+                iterations += 1
+
+                if logfile != None:
+                    logfile.write("epoch: {} iteration: {} loss: {}\n"\
+                                  .format(i+1, iterations, loss))
 
 
 def main():
@@ -142,7 +183,7 @@ def main():
 
     # initialize and train
     testNN = NeuralNetwork([3,2,2])
-    testNN.batch_grad_descent(X, Y, 1.0, 10000)
+    testNN.BGD(X, Y, 1.0, 10000)
 
     # print results
     for x in X:
@@ -151,5 +192,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-                
