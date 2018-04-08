@@ -2,13 +2,16 @@ import pygame
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import pickle
+
+digit_classifier = pickle.load(open("models/demo_network.pickle", "rb"))
+
 pygame.init()
 
 # display window of the program
 screen = pygame.display.set_mode((400,400))
 done = False
 draw = False
-
 
 clock = pygame.time.Clock()
 
@@ -103,54 +106,31 @@ while not done:
                 save_window = pygame.transform.rotate(save_window,-90)
                 save_window = pygame.transform.flip(save_window,1,0)
                 vector = pygame.surfarray.array2d(save_window)
-                print("read successfully")
+                #print("read successfully")
+
+                # black pixels are 1 and white are 0
+                vector = vector / 16777215
+                vector = np.ones([28, 28]) - vector
 
                 # NOTE white pixel = 16777215 black pixel = 0
                 # if user draw on the side of the screen center the drawing
                 # by calculating center of mass
                 x_moment = 0
-                delx = 0
                 y_moment = 0
-                dely = 0
                 mass = 0
                 for i in range(28):
                     for j in range(28):
-                        if vector[i][j] == 0:
-                            x_moment += i * 1
-                            y_moment += j * 1
-                            mass += 1
-                         # adjusting the array so that the pixel are
-                         # either 1 or 0
-
-                        if vector[i][j] == 0:
-                            # black pixel
-                            vector[i][j] = 1
-                        else:
-                            # white pixel
-                            vector[i][j] = 0
-                        # print(vector[i][j])
+                        x_moment += i * vector[i][j]
+                        y_moment += j * vector[i][j]
+                        mass += vector[i][j]
+                
                 delx = math.floor(y_moment/mass) # rounding
                 dely = math.floor(x_moment/mass) # rounding
-                # print("before")
-                # print(delx)
-                # print(dely)
-                if delx > 14:
-                    delx = 14-delx
-                else:
-                    delx = 14-delx
-                if dely > 14:
-                    dely = 14-dely
-                else:
-                    dely = 14-dely
-                # print("after")
-                # print(delx)
-                # print(dely)
-                # print(mass)
 
                 # axis 0 = translation for y and axis 1 = translation in x
                 # translating the image to center it
-                vector = np.roll(vector,int(dely), axis=0)
-                vector = np.roll(vector,int(delx), axis=1)
+                vector = np.roll(vector,int(14 - dely), axis=0)
+                vector = np.roll(vector,int(14 - delx), axis=1)
 
                 # ------------------------placeholder-------------------
                 # this reprints the scaled image if needed
@@ -166,9 +146,13 @@ while not done:
 
                 # checking if the image was process correctly
 
-                plt.imshow(vector,interpolation = 'none')
-                plt.set_cmap('binary')
-                plt.show()
+                #plt.imshow(vector,interpolation = 'none')
+                #plt.set_cmap('binary')
+                #plt.show()
+
+                onehot = digit_classifier.feedforward(vector.reshape(784, 1))
+                print(np.argmax(onehot))
+                               
 
                 # once program reads what user draws
                 # send the value back to them
