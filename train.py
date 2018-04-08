@@ -5,18 +5,11 @@ Last Edited April 6, 2018
 Trains a neural network to classify handwritten digits.
 """
 
+import pickle
 from sys import stdout
 import numpy as np
 from mnist import load_training, load_testing
 from neuralnet import NeuralNetwork
-
-
-def train(NN):
-    learning_rate = 0.5
-    epochs = 30
-    batch_size = 10
-    Y, X = load_training()
-    NN.SGD(X, Y, batch_size, learning_rate, epochs, logfile=stdout)
     
 
 def evaluate(NN):
@@ -33,13 +26,26 @@ def evaluate(NN):
 
         total += 1
 
-    print("{} / {}".format(correct, total))
+    print("Accuracy: {} / {}".format(correct, total))
 
 
 def main():
-    digitClassifier = NeuralNetwork([784, 15, 10])
-    train(digitClassifier)
-    evaluate(digitClassifier)
+    hidden_size = int(input("Hidden Layer Size: "))
+    epochs = int(input("Epochs: "))
+    batch_size = int(input("Batch Size: "))
+    learning_rate = float(input("Learning Rate: "))
+
+    outfile = input("Save neural network as (filename): ")
+
+    Y, X = load_training()
+    
+    network = NeuralNetwork([784, hidden_size, 10])
+    network.SGD(X, Y, batch_size, learning_rate, epochs, logfile=stdout)
+    
+    evaluate(network)
+
+    print("Saving model under: models/{}".format(outfile))
+    pickle.dump(network, open("models/{}".format(outfile), "wb"))
 
 
 if __name__ == "__main__":
