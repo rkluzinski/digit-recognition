@@ -14,6 +14,8 @@ done = False
 draw = False
 clear = False
 process = False
+image = False
+drawing = pygame.Surface((0,0))
 clock = pygame.time.Clock()
 
 # colours
@@ -61,7 +63,8 @@ def setup_screen():
     pygame.draw.rect(screen,LIGHT_GREY,pygame.Rect(14,84,82,32))
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(10,140,90,40))
     pygame.draw.rect(screen,LIGHT_GREY,pygame.Rect(14,144,82,32))
-    
+    pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(6,296,98,98))
+    # border for the image processed
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(120,280,4,120))
     # printing text
     screen.blit(reading_text,(133,310))
@@ -100,7 +103,7 @@ def process_image():
             y_moment += j * vector[i][j]
             mass += vector[i][j]
     if mass == 0:
-        return "?"
+        return "?",False,None
     else:
         delx = math.floor(y_moment/mass) # rounding
         dely = math.floor(x_moment/mass) # rounding
@@ -110,17 +113,13 @@ def process_image():
         vector = np.roll(vector,int(14 - dely), axis=0)
         vector = np.roll(vector,int(14 - delx), axis=1)
 
-    # ------------------------placeholder-------------------
-    # this reprints the scaled image if needed
-    #
-    # drawing = pygame.surfarray.make_surface(vector)
-    # drawing = pygame.transform.rotate(drawing,-90)
-    # drawing = pygame.transform.flip(drawing,1,0)
-    # drawing = pygame.transform.scale(drawing,(280,280))
-    # screen.blit(drawing,(120,0))
-    # pygame.display.flip()
-    # pygame.time.wait(2000)
-    # -------------------------
+    # reprints the image in a downscaled form to show user what the program reads
+    drawing = vector
+    drawing = (drawing * -16777215) + 16777215
+    drawing = pygame.surfarray.make_surface(drawing)
+    drawing = pygame.transform.rotate(drawing,-90)
+    drawing = pygame.transform.flip(drawing,1,0)
+    drawing = pygame.transform.scale(drawing,(90,90))
 
     # checking if the image was process correctly
     #plt.imshow(vector,interpolation = 'none')
@@ -132,9 +131,9 @@ def process_image():
 
     # once program reads what user draws
     # send the value back to the
-
     clear = True
-    return np.argmax(onehot)
+    return np.argmax(onehot),True, drawing
+
 # --------------- MAIN STARTS HERE -----------------
 setup_screen()
 while not done:
@@ -175,10 +174,16 @@ while not done:
             text_read = ""
             setup_screen()
             clear = False
+            image = False
         # make the image for the program to read
         if process == True:
-            text_read = process_image()
+            text_read,image,drawing = process_image()
             setup_screen()
             process = False
+        if image == True:
+            screen.blit(drawing,(10,300))
+        else:
+            pygame.draw.rect(screen,WHITE,pygame.Rect(10,300,90,90))
+
     pygame.display.flip()
     clock.tick(300)
