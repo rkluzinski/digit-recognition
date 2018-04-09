@@ -94,14 +94,12 @@ class NeuralNetwork:
             a2 = self.sigmoid(z2)
 
             # computes error and loss
-            error = a2 - y
-            loss += np.sum(np.square(error))
+            error = (a2 - y)
+            loss += -1 * np.sum( y * np.log(a2) + (1 - y) * np.log(1 - a2) )
 
             # computes the backwards propagating errors
-            delta2 = np.multiply(error,
-                                 self.sigmoid(z2, deriv=True))
-            delta1 = np.multiply(self.W2.T.dot(delta2),
-                                 self.sigmoid(z1, deriv=True))
+            delta2 = error
+            delta1 = np.multiply(self.W2.T.dot(delta2), self.sigmoid(z1, deriv=True))
 
             # updates the gradients
             dW1 += delta1.dot(x.T)
