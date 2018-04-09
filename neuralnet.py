@@ -66,7 +66,7 @@ class NeuralNetwork:
         return a2
 
 
-    def backpropagate(self, X, Y):
+    def backpropagate(self, X, Y, reg_const):
         """
         Locally computes the gradient of the cost function.
         """
@@ -95,15 +95,18 @@ class NeuralNetwork:
 
             # computes error and loss
             error = (a2 - y)
-            loss += -1 * np.sum( y * np.log(a2) + (1 - y) * np.log(1 - a2) )
+
+            # cross entropy loss and regularization
+            loss += -1 * np.sum( y * np.log(a2) + (1 - y) * np.log(1 - a2) )\
+                    + reg_const * (np.sum(np.square(self.W1)) + np.sum(np.square(self.W2))) / len(X) 
 
             # computes the backwards propagating errors
             delta2 = error
             delta1 = np.multiply(self.W2.T.dot(delta2), self.sigmoid(z1, deriv=True))
 
             # updates the gradients
-            dW1 += delta1.dot(x.T)
-            dW2 += delta2.dot(a1.T)
+            dW1 += delta1.dot(x.T) + reg_const / len(X) * self.W1
+            dW2 += delta2.dot(a1.T) + reg_const / len(X) * self.W2
             db1 += delta1
             db2 += delta2
 
@@ -136,8 +139,9 @@ class NeuralNetwork:
 
     def SGD(self, X, Y,
             batch_size,
-            learning_rate,
             epochs,
+            learning_rate,
+            reg_const,
             logfile=None):
         """
         Optimizes the weights and biases using gradient descent.
@@ -159,7 +163,7 @@ class NeuralNetwork:
                 batchY = [Y[k] for k in training_order[j:j+batch_size]]
                 
                 loss, dW1, dW2, db1, db2 =\
-                self.backpropagate(batchX, batchY)
+                self.backpropagate(batchX, batchY, reg_const)
 
                 # update parameters
                 self.W1 -= learning_rate * dW1

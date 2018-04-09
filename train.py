@@ -34,13 +34,14 @@ def main():
     epochs = int(input("Epochs: "))
     batch_size = int(input("Batch Size: "))
     learning_rate = float(input("Learning Rate: "))
+    reg_const = float(input("Regularization Constant: "))
 
     outfile = input("Save neural network as (filename): ")
 
     Y, X = load_training()
     
     network = NeuralNetwork([784, hidden_size, 10])
-    network.SGD(X, Y, batch_size, learning_rate, epochs, logfile=stdout)
+    network.SGD(X, Y, batch_size, epochs, learning_rate, reg_const, logfile=stdout)
     
     evaluate(network)
 
