@@ -2,7 +2,7 @@
 Written by Ryan Kluzinski
 Last Edited April 6, 2018
 
-A neural network class.
+A class that implements a 3 layer neural network.
 """
 
 from random import shuffle
@@ -11,15 +11,15 @@ import numpy as np
 
 class NeuralNetwork:
     """
-    A class for 3-layer neural network.
+    A class for initializes and training a 3-layers neural network.
     """
 
     def __init__(self, sizes):
         """
-        Initializes the network with random weights.
+        Initializes the network with random weights and biases.
         """
 
-        # only 3 layer-networks are supported
+        # only 3 layer-networks are supported currently
         assert len(sizes) == 3
 
         # stores the layer sizes
@@ -38,6 +38,13 @@ class NeuralNetwork:
         """
         Uses the sigmoid function for the nonlinear activation
         function. Returns the derivative if deriv=True.
+        
+        Arguments:
+        x: a real number.
+        deriv (default = False): If true, return derivative.
+
+        Returns:
+        The value of the sigmoid function at x.
         """
 
         # return derivative
@@ -45,21 +52,30 @@ class NeuralNetwork:
             s = self.sigmoid(x)
             return s*(1-s)
 
+        # calculate sigmoid(x)
         return 1/(1+np.exp(-x))
 
 
     def feedforward(self, vector):
         """
         Feeds a column vector into the neural network and returns 
-        the ouput vector.
+        the output.
+
+        Arguments:
+        vector: the columns vector inputted to the neural network.
+
+        Returns:
+        a2: The final layer activation, the output of the network.
         """
 
         # input must be a column vector
         assert vector.shape == (self.sizes[0], 1)
 
+        # calculates the hidden layer activation
         z1 = self.W1.dot(vector) + self.b1
         a1 = self.sigmoid(z1)
 
+        # calculates the final layer activation
         z2 = self.W2.dot(a1) + self.b2
         a2 = self.sigmoid(z2)
 
@@ -68,22 +84,30 @@ class NeuralNetwork:
 
     def backpropagate(self, X, Y):
         """
-        Locally computes the gradient of the cost function.
+        Computes the gradient of the cost function using backpropagation.
+
+        Arguments:
+        X: the batch of training inputs.
+        Y: the batch of training outputs.
         """
 
+        # ensures both batches are the same size
         assert len(X) == len(Y)
+
+        # gets the batch size
         batch_size = len(X)
 
-        # stores gradients of the weights and biases
+        # intializes gradient vectors for the weights and biases
         dW1 = np.zeros([self.sizes[1], self.sizes[0]])
         dW2 = np.zeros([self.sizes[2], self.sizes[1]])
         db1 = np.zeros([self.sizes[1], 1])
         db2 = np.zeros([self.sizes[2], 1])
 
+        # stores the loss
         loss = 0
 
         for x, y in zip(X, Y):
-            # convert to column vectors
+            # converts inputs/outputs to column vectors
             x = x.reshape(self.sizes[0], 1)
             y = y.reshape(self.sizes[2], 1)
 
