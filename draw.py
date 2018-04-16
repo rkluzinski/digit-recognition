@@ -1,3 +1,8 @@
+# Student: Kelly Luc
+# Student id: 1498694
+# Student: Ryan Kluzinski
+# Student id:
+
 import pygame
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,6 +11,7 @@ import pickle
 
 digit_classifier = pickle.load(open("models/hn_80_9751.pickle", "rb"))
 
+# initializing pygames
 pygame.init()
 
 # display window of the program
@@ -51,20 +57,18 @@ font = pygame.font.Font(None,40)
 clear_text = font.render("Clear", True, BLACK)
 send_text = font.render("Read", True, BLACK)
 
-# fill the screen white much like ms paint and add other
-#  ui stuff like instruction of using the program
+# setting up screen UI
 def setup_screen():
     screen.fill(WHITE)
     pygame.draw.rect(screen,GREY,pygame.Rect(0,0,120,400))
     pygame.draw.rect(screen,GREY,pygame.Rect(0,280,400,120))
     pygame.draw.rect(screen,WHITE,pygame.Rect(240,293,148,97))
-    # buttons for text
+    # creating buttons for text and borders for buttons and processed image
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(10,80,90,40))
     pygame.draw.rect(screen,LIGHT_GREY,pygame.Rect(14,84,82,32))
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(10,140,90,40))
     pygame.draw.rect(screen,LIGHT_GREY,pygame.Rect(14,144,82,32))
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(6,296,98,98))
-    # border for the image processed
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(120,280,4,120))
     # printing text
     screen.blit(reading_text,(133,310))
@@ -121,13 +125,7 @@ def process_image():
     drawing = pygame.transform.flip(drawing,1,0)
     drawing = pygame.transform.scale(drawing,(90,90))
 
-    # checking if the image was process correctly
-    #plt.imshow(vector,interpolation = 'none')
-    #plt.set_cmap('binary')
-    #plt.show()
-
     onehot = digit_classifier.feedforward(vector.reshape(784, 1))
-    # print(np.argmax(onehot))
 
     # once program reads what user draws
     # send the value back to the
@@ -180,10 +178,10 @@ while not done:
             text_read,image,drawing = process_image()
             setup_screen()
             process = False
+        # prints the image processed
         if image == True:
             screen.blit(drawing,(10,300))
         else:
             pygame.draw.rect(screen,WHITE,pygame.Rect(10,300,90,90))
-
     pygame.display.flip()
     clock.tick(300)
