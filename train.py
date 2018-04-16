@@ -49,6 +49,7 @@ def main():
     epochs = int(input("Epochs: "))
     batch_size = int(input("Batch Size: "))
     learning_rate = float(input("Learning Rate: "))
+    reg_const = float(input("Regularization Constant: "))
 
     # gets file to store the neuralnetwork in
     outfile = input("Save neural network as (filename): ")
@@ -61,7 +62,7 @@ def main():
     network = NeuralNetwork([784, hidden_size, 10])
 
     # runs stochastic gradient descent with given hyperparametres
-    network.SGD(X, Y, batch_size, learning_rate, epochs, logfile=stdout)
+    network.SGD(X, Y, batch_size, epochs, learning_rate, reg_const, logfile=stdout)
 
     # evaluates the networks performance
     evaluate(network)
