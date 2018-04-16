@@ -9,7 +9,7 @@ import numpy as np
 import math
 import pickle
 
-digit_classifier = pickle.load(open("models/demo_network.pickle", "rb"))
+digit_classifier = pickle.load(open("models/hn_80_9751.pickle", "rb"))
 
 # initializing pygames
 pygame.init()
