@@ -89,6 +89,10 @@ class NeuralNetwork:
         Arguments:
         X: the batch of training inputs.
         Y: the batch of training outputs.
+
+        Returns:
+        dW1, dW2, db1, db2: the gradients of the weights and biases.
+        loss: the total loss for this batch.
         """
 
         # ensures both batches are the same size
@@ -120,9 +124,11 @@ class NeuralNetwork:
             # computes error and loss
             error = (a2 - y)
 
-            # cross entropy loss and regularization
-            loss += -1 * np.sum( y * np.log(a2) + (1 - y) * np.log(1 - a2) )\
-                    + reg_const * (np.sum(np.square(self.W1)) + np.sum(np.square(self.W2))) / len(X) 
+            # computes cross entropy loss
+            loss += -1 * np.sum( y * np.log(a2) + (1 - y) * np.log(1 - a2) )
+
+            # add regularization component to loss
+            loss += reg_const * (np.sum(np.square(self.W1)) + np.sum(np.square(self.W2))) / len(X) 
 
             # computes the backwards propagating errors
             delta2 = error
@@ -143,53 +149,44 @@ class NeuralNetwork:
         return loss, dW1, dW2, db1, db2
 
 
-    def BGD(self, X, Y, learning_rate, epochs):
+    def SGD(self, X, Y, batch_size, epochs, learning_rate, reg_const, logfile=None):
         """
-        Uses the entire set of training data to compute the
-        gradient for each epoch. The weights and biases are only
-        updated once per epoch.
-        """
+        Optimizes the weights and biases using stochastic gradient descent.
 
-        for i in range(epochs):
-            loss, dW1, dW2, db1, db2 = self.backpropagate(X, Y)
-
-            # update parameters
-            self.W1 -= learning_rate * dW1
-            self.W2 -= learning_rate * dW2
-            self.b1 -= learning_rate * db1
-            self.b2 -= learning_rate * db2
-            
-            print(loss)
-
-    def SGD(self, X, Y,
-            batch_size,
-            epochs,
-            learning_rate,
-            reg_const,
-            logfile=None):
-        """
-        Optimizes the weights and biases using gradient descent.
+        Arguments:
+        X: the training inputs.
+        Y: the training outputs.
+        batch_size: how big each backprop batch will be.
+        epochs: how many times to iterate over all training data.
+        learning_rate: how fast the neural learns.
+        reg_const: the regularization constant, prevents overfitting with
+          large networks.
+        logfile (default = None): the file to log the epoch, iteration,
+          and the current loss to.
         """
 
+        # assertions to prevent errors
         assert len(X) == len(Y)
-        assert batch_size < len(X)
+        assert batch_size <= len(X)
 
+        # iteration count
         iterations = 0
-        
+
         for i in range(epochs):
             # randomly shuffle training data
             training_order = [i for i in range( len(X) )]
             shuffle(training_order)
 
+            # for each batch
             for j in range(0, len(X), batch_size):
-
+                # create the training batches
                 batchX = [X[k] for k in training_order[j:j+batch_size]]
                 batchY = [Y[k] for k in training_order[j:j+batch_size]]
-                
-                loss, dW1, dW2, db1, db2 =\
-                self.backpropagate(batchX, batchY, reg_const)
 
-                # update parameters
+                # performs backpropagation
+                loss, dW1, dW2, db1, db2 = self.backpropagate(batchX, batchY, reg_const)
+
+                # updates the models parameters
                 self.W1 -= learning_rate * dW1
                 self.W2 -= learning_rate * dW2
                 self.b1 -= learning_rate * db1
@@ -197,19 +194,20 @@ class NeuralNetwork:
 
                 iterations += 1
 
+                # log to file
                 if logfile != None:
-                    logfile.write("epoch: {} iteration: {} loss: {}\n"\
-                                  .format(i+1, iterations, loss))
+                    line = "epoch: {} iteration: {} loss: {}\n".format(i+1, iterations, loss)
+                    logfile.write(line)
 
 
 def main():
-    # test data
+    # some sample testing data
     X = np.array([[1,0,1], [0,0,1], [1,0,0]])
     Y = np.array([[1,0], [0,1], [1,1]])
 
-    # initialize and train
+    # initialize and trains the test neural network
     testNN = NeuralNetwork([3,2,2])
-    testNN.BGD(X, Y, 1.0, 10000)
+    testNN.SGD(X, Y, 3, 10000, 0.1, 0)
 
     # print results
     for x in X:
