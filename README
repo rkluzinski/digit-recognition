@@ -1,1 +1,29 @@
-HI
+Cmput 275 project
+
+Name: Ryan Kluzinski
+Student ID:
+
+Name: Kelly Luc
+Student ID: 1498694
+
+DESCRIPTION:
+  This is a program that reads numbers from 0 to 9 that user draws as input in a
+  paint program and by machine learning the program should return the number
+  that the users draw.
+
+NOTE:
+  packages used are:
+    *pygame
+    *pyplot
+    *numpy
+    *math
+    *pickle
+    *random
+    *collections
+
+HOW TO RUN:
+1. run draw.py using python
+2. draw any number from 0 to 9 in the space provided
+3. hit read and the program will return the number it read and prints the
+image it read on the bottom left
+4. if you made a mistake you can right click to erase or clear the image
