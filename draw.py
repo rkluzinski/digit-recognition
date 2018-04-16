@@ -1,7 +1,11 @@
-# Student: Kelly Luc
-# Student id: 1498694
-# Student: Ryan Kluzinski
-# Student id:
+"""
+Written by:
+Ryan Kluzinski	1492614
+Kelly Luc    	1498694
+Last Edited April 15, 2018
+
+Gives a window to demo the neural networks capabilities.
+"""
 
 import pygame
 import matplotlib.pyplot as plt
@@ -9,9 +13,10 @@ import numpy as np
 import math
 import pickle
 
+# imports the trained model as a pickle file
 digit_classifier = pickle.load(open("models/hn_80_9751.pickle", "rb"))
 
-# initializing pygames
+# initializing pygame
 pygame.init()
 
 # display window of the program
@@ -63,6 +68,7 @@ def setup_screen():
     pygame.draw.rect(screen,GREY,pygame.Rect(0,0,120,400))
     pygame.draw.rect(screen,GREY,pygame.Rect(0,280,400,120))
     pygame.draw.rect(screen,WHITE,pygame.Rect(240,293,148,97))
+    
     # creating buttons for text and borders for buttons and processed image
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(10,80,90,40))
     pygame.draw.rect(screen,LIGHT_GREY,pygame.Rect(14,84,82,32))
@@ -70,12 +76,14 @@ def setup_screen():
     pygame.draw.rect(screen,LIGHT_GREY,pygame.Rect(14,144,82,32))
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(6,296,98,98))
     pygame.draw.rect(screen,GREY_BORDER,pygame.Rect(120,280,4,120))
+    
     # printing text
     screen.blit(reading_text,(133,310))
     screen.blit(draw_text,(5,20))
     screen.blit(erase_text,(5,50))
     screen.blit(clear_text,(18,86))
     screen.blit(send_text,(20,146))
+    
     # is there anything that was read when user hits enter?
     if text_read is not None:
         font = pygame.font.Font(None, 60)
@@ -89,7 +97,6 @@ def process_image():
     save_window = pygame.transform.rotate(save_window,-90)
     save_window = pygame.transform.flip(save_window,1,0)
     vector = pygame.surfarray.array2d(save_window)
-    #print("read successfully")
 
     # black pixels are 1 and white are 0
     vector = vector / 16777215
@@ -106,16 +113,17 @@ def process_image():
             x_moment += i * vector[i][j]
             y_moment += j * vector[i][j]
             mass += vector[i][j]
+
     if mass == 0:
         return "?",False,None
-    else:
-        delx = math.floor(y_moment/mass) # rounding
-        dely = math.floor(x_moment/mass) # rounding
+    
+    delx = math.floor(y_moment/mass) # rounding
+    dely = math.floor(x_moment/mass) # rounding
 
     # axis 0 = translation for y and axis 1 = translation in x
     # translating the image to center it
-        vector = np.roll(vector,int(14 - dely), axis=0)
-        vector = np.roll(vector,int(14 - delx), axis=1)
+    vector = np.roll(vector,int(14 - dely), axis=0)
+    vector = np.roll(vector,int(14 - delx), axis=1)
 
     # reprints the image in a downscaled form to show user what the program reads
     drawing = vector
@@ -125,6 +133,7 @@ def process_image():
     drawing = pygame.transform.flip(drawing,1,0)
     drawing = pygame.transform.scale(drawing,(90,90))
 
+    # get the network to classify the digit
     onehot = digit_classifier.feedforward(vector.reshape(784, 1))
 
     # once program reads what user draws
@@ -148,12 +157,14 @@ while not done:
             color = BLACK
             brush_size = 12
             draw = True
+            
             if mouse_pos[1] < 120 and mouse_pos[1] > 80:
                 if mouse_pos[0] >10 and mouse_pos[0] < 100:
                     clear = True
             if mouse_pos[1] > 140 and mouse_pos[1] < 180:
                 if mouse_pos[0] >10 and mouse_pos[0] < 100:
                     process = True
+                    
         elif event.type == pygame.MOUSEBUTTONUP and event.button == LEFT:
             draw = False
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT:
@@ -162,26 +173,31 @@ while not done:
             draw = True
         elif event.type == pygame.MOUSEBUTTONUP and event.button == RIGHT:
             draw = False
+            
         if draw == True:
             # is the mouse in the area where it can draw?
             # if so then draw or erase
             if mouse_pos[0] > 131 and mouse_pos[0] < 389 and mouse_pos[1] < 269 and mouse_pos[1]:
                 pygame.draw.circle(screen,color,mouse_pos,brush_size)
+                
         # refresh the screen
         if clear == True:
             text_read = ""
             setup_screen()
             clear = False
             image = False
+            
         # make the image for the program to read
         if process == True:
             text_read,image,drawing = process_image()
             setup_screen()
             process = False
+            
         # prints the image processed
         if image == True:
             screen.blit(drawing,(10,300))
         else:
             pygame.draw.rect(screen,WHITE,pygame.Rect(10,300,90,90))
+            
     pygame.display.flip()
     clock.tick(300)

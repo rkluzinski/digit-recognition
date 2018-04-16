@@ -1,29 +1,63 @@
-Cmput 275 project
+CMPUT 275 Final Project - Handwritten Digit Recognition
 
-Name: Ryan Kluzinski
-Student ID:
-
-Name: Kelly Luc
-Student ID: 1498694
+Written by:
+Ryan Kluzinski	1492614
+Kelly Luc    	1498694
 
 DESCRIPTION:
-  This is a program that reads numbers from 0 to 9 that user draws as input in a
-  paint program and by machine learning the program should return the number
-  that the users draw.
+  This program reads handwritten digits 0-9 entered by the using a 'paint' type
+  program. It then uses a neural network to classify the handwritten digits. The
+  neural network was trained using the mnist database for handwritten digits.
+  Included in the project is the script used to train the neural network.
 
-NOTE:
-  packages used are:
-    *pygame
-    *pyplot
-    *numpy
-    *math
-    *pickle
-    *random
-    *collections
+DEPENDENCIES:
+ - numpy
+ - pygame
+ - matplotlib
 
-HOW TO RUN:
-1. run draw.py using python
-2. draw any number from 0 to 9 in the space provided
-3. hit read and the program will return the number it read and prints the
-image it read on the bottom left
-4. if you made a mistake you can right click to erase or clear the image
+USING THE PROGRAM:
+draw.py - Handwritten Digit Recognition
+1. Run 'python3 draw.py'. This will open a pygame window.
+2. Draw any digit 0-9 in the white space in the window.
+3. Press read and the program will return the number is thinks you wrote.
+4. If you make a mistake right click to erase parts of the image or press clear
+   to clear the entire canvas.
+
+train.py
+1. Run 'python3 train.py'. It will run in the terminal.
+2. The program will prompt you to enter hyperparameters for how you want the
+   neural network to be trained, and the directory to save the model in.
+
+  The hyperparameters:
+    Hidden Layer Size: The number of neurons in the networks hidden layer.
+      More neurons means it can learn more complex functions, but will take
+      longer to train.
+    Epochs: The number of times the program will iterate over all of the
+      training data.
+    Batch Size: The number of training examples used to for each iteration
+      in the networks learning.
+    Learning Rate: How fast the neural network learns.
+    Regularization Constant: How much the network 'punishes' overly complex
+      functions. This prevents the network from matching the training data
+      to well and doing badly on other examples.
+
+3. The program will proceed with training the neural network and display the
+   current epoch, iteration, and loss (how wrong the network is). This may take
+   anywhere from a minute to an hour, depending on your hyperparameters.
+
+4. The program will then print the accuracy the model achieves and save it as
+   a pickle file in the directory models/.
+
+  Quick Example (takes ~1 minute to train and achieves ~90% accurary):
+    Hidden Layer Size: 10
+    Epochs: 1
+    Batch Size: 10
+    Learning Rate: 0.5
+    Regularization Constant: 0.001
+
+  Better Example (takes ~25 minutes to train and achieves ~97% accurary):
+    Hidden Layer Size: 80
+    Epochs: 30
+    Batch Size: 10
+    Learning Rate: 0.5
+    Regularization Constant: 0.001

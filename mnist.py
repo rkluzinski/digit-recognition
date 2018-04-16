@@ -1,5 +1,7 @@
 """
-Written by Ryan Kluzinski - 1492614
+Written by:
+Ryan Kluzinski	1492614
+Kelly Luc    	1498694
 Last Edited April 15, 2018
 
 This file contains functions for loading the mnist training

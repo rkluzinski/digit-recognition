@@ -1,8 +1,10 @@
 """
-Written by Ryan Kluzinski
-Last Edited April 6, 2018
+Written by:
+Ryan Kluzinski	1492614
+Kelly Luc    	1498694
+Last Edited April 15, 2018
 
-A class that implements a 3 layer neural network.
+A class that implements a 3-layer neural network.
 """
 
 from random import shuffle
